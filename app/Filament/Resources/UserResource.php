@@ -24,7 +24,7 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
     protected static ?string $navigationLabel = 'Employees';
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationGroup = "Employees Management";
+    protected static ?string $navigationGroup = "Employee Management";
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -92,7 +92,16 @@ class UserResource extends Resource
                         Forms\Components\TextInput::make('postal_code')
                             ->label('Postal Code')
                             ->required()
-                    ])
+                    ]),
+
+                Section::make('Departments')
+                    ->schema([
+                        Forms\Components\Select::make('departments')
+                            ->relationship('departments', 'name')
+                            ->multiple()
+                            ->preload()
+                            ->searchable(),
+                    ]),
             ]);
     }
 
@@ -104,6 +113,8 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('departments.name')
+                    ->badge(),
                 Tables\Columns\TextColumn::make('address')
                     ->searchable()
                     ->sortable(),
@@ -124,7 +135,10 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('departments')
+                    ->relationship('departments', 'name')
+                    ->multiple()
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
