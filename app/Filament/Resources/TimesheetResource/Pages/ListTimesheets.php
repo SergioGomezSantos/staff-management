@@ -14,7 +14,7 @@ class ListTimesheets extends ListRecords
     {
         return [
             \Filament\Actions\Action::make('info')
-            ->label('This Week Timesheets by Default')
+            ->label('This Week Timesheets Filtered by Default')
             ->color('gray')
             ->disabled(),
             Actions\CreateAction::make(),

@@ -1,17 +1,19 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Personal\Resources;
 
-use App\Filament\Resources\TimesheetResource\Pages;
-use App\Filament\Resources\TimesheetResource\RelationManagers;
+use App\Filament\Personal\Resources\TimesheetResource\Pages;
+use App\Filament\Personal\Resources\TimesheetResource\RelationManagers;
 use App\Models\Timesheet;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class TimesheetResource extends Resource
 {
@@ -21,33 +23,36 @@ class TimesheetResource extends Resource
     protected static ?string $navigationGroup = 'Employee Management';
     protected static ?int $navigationSort = 1;
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('user_id', Auth::id());
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('calendar_id')
-                    ->relationship(
-                        name: 'calendar',
-                        titleAttribute: 'name'
-                    )
-                    ->required(),
-                Forms\Components\Select::make('user_id')
-                    ->relationship(
-                        name: 'user',
-                        titleAttribute: 'name'
-                    )
-                    ->required(),
-                Forms\Components\DateTimePicker::make('start_time')
-                    ->required(),
-                Forms\Components\DateTimePicker::make('end_time'),
-                Forms\Components\Select::make('type')
-                    ->options(
-                        [
-                            'work' => 'Working',
-                            'pause' => 'In Pause',
-                        ]
-                    )
-                    ->required(),
+                Section::make('')
+                    ->columns(3)
+                    ->schema([
+                        Forms\Components\DateTimePicker::make('start_time')
+                            ->required()
+                            ->default(function () {
+                                $lastEntry = Timesheet::where('user_id', Auth::id())->latest('start_time')->first();
+                                return $lastEntry && $lastEntry->end_time ? $lastEntry->end_time : now();
+                            })
+                            ->seconds(false),
+                        Forms\Components\DateTimePicker::make('end_time')
+                            ->seconds(false),
+                        Forms\Components\Select::make('type')
+                            ->options(
+                                [
+                                    'work' => 'Working',
+                                    'pause' => 'In Pause',
+                                ]
+                            )
+                            ->required(),
+                    ]),
             ]);
     }
 
@@ -56,9 +61,6 @@ class TimesheetResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('calendar.name')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('user.name')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('type')
@@ -149,8 +151,8 @@ class TimesheetResource extends Resource
     {
         return [
             'index' => Pages\ListTimesheets::route('/'),
-            'create' => Pages\CreateTimesheet::route('/create'),
-            'edit' => Pages\EditTimesheet::route('/{record}/edit'),
+            // 'create' => Pages\CreateTimesheet::route('/create'),
+            // 'edit' => Pages\EditTimesheet::route('/{record}/edit'),
         ];
     }
 }

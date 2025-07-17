@@ -1,17 +1,19 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Personal\Resources;
 
-use App\Filament\Resources\HolidayResource\Pages;
-use App\Filament\Resources\HolidayResource\RelationManagers;
+use App\Filament\Personal\Resources\HolidayResource\Pages;
+use App\Filament\Personal\Resources\HolidayResource\RelationManagers;
 use App\Models\Holiday;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class HolidayResource extends Resource
 {
@@ -21,42 +23,31 @@ class HolidayResource extends Resource
     protected static ?string $navigationGroup = 'Employee Management';
     protected static ?int $navigationSort = 2;
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('user_id', Auth::id());
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('user_id')
-                    ->relationship(
-                        name: 'user',
-                        titleAttribute: 'name'
-                    )
-                    ->required(),
-                Forms\Components\Select::make('calendar_id')
-                    ->relationship(
-                        name: 'calendar',
-                        titleAttribute: 'name'
-                    )
-                    ->required(),
-                Forms\Components\DatePicker::make('start_date')
-                    ->required(),
-                Forms\Components\DatePicker::make('end_date'),
-                Forms\Components\Select::make('type')
-                    ->options([
-                        'vacation' => 'Vacation',
-                        'sick_leave' => 'Sick Leave',
-                        'personal' => 'Personal',
-                        'other' => 'Other',
-                    ])
-                    ->required()
-                    ->default('vacation'),
-                Forms\Components\Select::make('status')
-                    ->options([
-                        'pending' => 'Pending',
-                        'approved' => 'Approved',
-                        'declined' => 'Declined',
-                    ])
-                    ->required()
-                    ->default('pending'),
+                Section::make('')
+                    ->columns(3)
+                    ->schema([
+                        Forms\Components\DatePicker::make('start_date')
+                            ->required(),
+                        Forms\Components\DatePicker::make('end_date')
+                            ->required(),
+                        Forms\Components\Select::make('type')
+                            ->options([
+                                'vacation' => 'Vacation',
+                                'sick_leave' => 'Sick Leave',
+                                'personal' => 'Personal',
+                                'other' => 'Other',
+                            ])
+                            ->required()
+                    ]),
             ]);
     }
 
@@ -65,9 +56,6 @@ class HolidayResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('calendar.name')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('user.name')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('type')
@@ -146,8 +134,8 @@ class HolidayResource extends Resource
     {
         return [
             'index' => Pages\ListHolidays::route('/'),
-            'create' => Pages\CreateHoliday::route('/create'),
-            'edit' => Pages\EditHoliday::route('/{record}/edit'),
+            // 'create' => Pages\CreateHoliday::route('/create'),
+            // 'edit' => Pages\EditHoliday::route('/{record}/edit'),
         ];
     }
 }

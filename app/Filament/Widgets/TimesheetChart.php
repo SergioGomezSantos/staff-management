@@ -2,16 +2,16 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\User;
+use App\Models\Timesheet;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Carbon;
 
-class UserChart extends ChartWidget
+class TimesheetChart extends ChartWidget
 {
-    protected static ?string $heading = 'Employees Created';
+    protected static ?string $heading = 'Timesheets';
 
-    protected static ?int $sort = 4;
-    public ?string $filter = 'year';
+    protected static ?int $sort = 5;
+    public ?string $filter = 'week';
 
     protected function getData(): array
     {
@@ -52,42 +52,42 @@ class UserChart extends ChartWidget
 
             $labels[] = $period->format($format);
 
-            $userCount = match ($unit) {
-                'hours' => $this->getUserCountForHour($period),
-                'days' => $this->getUserCountForDay($period),
-                'months' => $this->getUserCountForMonth($period),
+            $timesheetCount = match ($unit) {
+                'hours' => $this->getTimesheetCountForHour($period),
+                'days' => $this->getTimesheetCountForDay($period),
+                'months' => $this->getTimesheetCountForMonth($period),
             };
 
-            $data[] = $userCount;
+            $data[] = $timesheetCount;
         }
 
         return [$labels, $data];
     }
 
-    private function getUserCountForHour(Carbon $hour): int
+    private function getTimesheetCountForHour(Carbon $hour): int
     {
-        return User::whereBetween('created_at', [
+        return Timesheet::whereBetween('start_time', [
             $hour->copy()->startOfHour(),
             $hour->copy()->endOfHour()
         ])->count();
     }
 
-    private function getUserCountForDay(Carbon $day): int
+    private function getTimesheetCountForDay(Carbon $day): int
     {
-        return User::whereDate('created_at', $day->toDateString())->count();
+        return Timesheet::whereDate('start_time', $day->toDateString())->count();
     }
 
-    private function getUserCountForMonth(Carbon $month): int
+    private function getTimesheetCountForMonth(Carbon $month): int
     {
-        return User::whereYear('created_at', $month->year)
-            ->whereMonth('created_at', $month->month)
+        return Timesheet::whereYear('start_time', $month->year)
+            ->whereMonth('start_time', $month->month)
             ->count();
     }
 
     protected function getFilters(): ?array
     {
         return [
-            'today' => 'Las 24 Hours',
+            'today' => 'Last 24 Hours',
             'week' => 'Last 7 Days',
             'month' => 'Last 30 Days',
             'year' => 'Last 12 Months',
