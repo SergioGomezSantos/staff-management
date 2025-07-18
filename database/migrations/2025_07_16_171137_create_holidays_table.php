@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->enum('type', ['vacation', 'sick_leave', 'personal', 'other'])->default('vacation');
             $table->enum('status', ['pending', 'approved', 'declined'])->default('pending');
+            $table->text('comments')->nullable();
             $table->date('start_date');
             $table->date('end_date')->nullable();
             $table->timestamps();

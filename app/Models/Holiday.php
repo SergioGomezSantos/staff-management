@@ -19,6 +19,7 @@ class Holiday extends Model
         'user_id',
         'type',
         'status',
+        'comments',
         'start_date',
         'end_date'
     ];

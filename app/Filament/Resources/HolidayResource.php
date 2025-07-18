@@ -60,6 +60,48 @@ class HolidayResource extends Resource
             ]);
     }
 
+    public static function getEditFormSchema(): array
+    {
+        return [
+            Forms\Components\Select::make('user_id')
+                ->relationship('user', 'name')
+                ->required(),
+            Forms\Components\Select::make('calendar_id')
+                ->relationship('calendar', 'name')
+                ->required(),
+            Forms\Components\DatePicker::make('start_date')
+                ->required(),
+            Forms\Components\DatePicker::make('end_date'),
+            Forms\Components\Select::make('type')
+                ->options([
+                    'vacation' => 'Vacation',
+                    'sick_leave' => 'Sick Leave',
+                    'personal' => 'Personal',
+                    'other' => 'Other',
+                ])
+                ->required(),
+            Forms\Components\Select::make('status')
+                ->options([
+                    'pending' => 'Pending',
+                    'approved' => 'Approved',
+                    'declined' => 'Declined',
+                ])
+                ->required()
+                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                    if ($state === 'pending') {
+                        $set('comments', null);
+                    }
+                }),
+            Forms\Components\Textarea::make('comments')
+                ->visible(function (Forms\Get $get) {
+                    return in_array($get('status'), ['approved', 'declined']);
+                })
+                ->required(function (Forms\Get $get) {
+                    return in_array($get('status'), ['approved', 'declined']);
+                }),
+        ];
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -94,6 +136,10 @@ class HolidayResource extends Resource
                         'declined' => 'danger'
                     })
                     ->searchable(),
+                Tables\Columns\TextColumn::make('comments')
+                    ->limit(20)
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('start_date')
                     ->date()
                     ->sortable(),

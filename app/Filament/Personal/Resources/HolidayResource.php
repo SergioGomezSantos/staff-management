@@ -5,15 +5,18 @@ namespace App\Filament\Personal\Resources;
 use App\Filament\Personal\Resources\HolidayResource\Pages;
 use App\Filament\Personal\Resources\HolidayResource\RelationManagers;
 use App\Models\Holiday;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class HolidayResource extends Resource
 {
@@ -37,8 +40,7 @@ class HolidayResource extends Resource
                     ->schema([
                         Forms\Components\DatePicker::make('start_date')
                             ->required(),
-                        Forms\Components\DatePicker::make('end_date')
-                            ->required(),
+                        Forms\Components\DatePicker::make('end_date'),
                         Forms\Components\Select::make('type')
                             ->options([
                                 'vacation' => 'Vacation',
@@ -113,12 +115,41 @@ class HolidayResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn(Holiday $record): bool => $record->status === 'pending')
+                    ->after(function ($record) {
+
+                        $user = User::find($record->user_id);
+                        $userAdmin = User::find(1);
+
+                        if ($userAdmin) {
+                            $dataToSend = [
+                                'name' => $user->name,
+                                'email' => $user->email,
+                                'type' => $record->type,
+                                'start_date' => $record->start_date,
+                                'end_date' => $record->end_date,
+                                'is_edit' => true
+                            ];
+
+                            Mail::to($userAdmin)->send(new \App\Mail\HolidayPending($dataToSend));
+
+                            Notification::make()
+                                ->title('Your Holiday Request will be Reviewed soon')
+                                ->info()
+                                ->send();
+                        }
+                    }),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn(Holiday $record): bool => $record->status === 'pending'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->action(function ($records) {
+                            $records->filter(fn($record) => $record->status === 'pending')
+                                ->each(fn($record) => $record->delete());
+                        }),
                 ]),
             ]);
     }
