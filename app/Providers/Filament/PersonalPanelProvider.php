@@ -18,6 +18,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class PersonalPanelProvider extends PanelProvider
@@ -36,9 +37,18 @@ class PersonalPanelProvider extends PanelProvider
             ])
             ->userMenuItems([
                 MenuItem::make()
-                ->label('Admin Panel')
-                ->url('/admin')
-                ->icon('heroicon-o-shield-check')
+                    ->label('Admin Panel')
+                    ->url('/admin')
+                    ->icon('heroicon-o-shield-check')
+                    ->visible(function (): bool {
+                        if (!Auth::check()) {
+                            return false;
+                        }
+
+                        /** @var \App\Models\User $user */
+                        $user = Auth::user();
+                        return $user->hasAnyRole(['admin', 'super_admin']);
+                    })
             ])
             ->discoverResources(in: app_path('Filament/Personal/Resources'), for: 'App\\Filament\\Personal\\Resources')
             ->discoverPages(in: app_path('Filament/Personal/Pages'), for: 'App\\Filament\\Personal\\Pages')

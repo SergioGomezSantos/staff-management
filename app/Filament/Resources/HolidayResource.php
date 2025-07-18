@@ -12,6 +12,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class HolidayResource extends Resource
 {
@@ -192,6 +194,14 @@ class HolidayResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    ExportBulkAction::make()->exports([
+                        ExcelExport::make('With Names')->fromTable()
+                            ->withFilename('Holidays_' . date('Y-m-d') . '_names_export')
+                            ->askForWriterType(),
+                        ExcelExport::make('With IDs')->fromForm()
+                            ->withFilename('Holidays_' . date('Y-m-d') . '_ids_export')
+                            ->askForWriterType(),
+                    ])
                 ]),
             ]);
     }
