@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TimesheetResource\Pages;
 use App\Filament\Resources\TimesheetResource\RelationManagers;
 use App\Models\Timesheet;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -20,6 +21,29 @@ class TimesheetResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-table-cells';
     protected static ?string $navigationGroup = 'Employee Management';
     protected static ?int $navigationSort = 1;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return parent::getEloquentQuery()->whereNull('end_time')
+            ->where('start_time', '<', Carbon::now()->startOfDay())
+            ->orderBy('start_time', 'desc')
+            ->count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        $incompleteTimesheets = parent::getEloquentQuery()->whereNull('end_time')
+            ->where('start_time', '<', Carbon::now()->startOfDay())
+            ->orderBy('start_time', 'desc')
+            ->count();
+
+        return $incompleteTimesheets > 0 ? 'primary' : 'gray';
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Incompleted';
+    }
 
     public static function form(Form $form): Form
     {

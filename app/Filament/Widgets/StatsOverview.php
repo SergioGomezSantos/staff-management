@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Department;
+use App\Models\Holiday;
 use App\Models\Timesheet;
 use App\Models\User;
 use Carbon\Carbon;
@@ -27,14 +28,21 @@ class StatsOverview extends BaseWidget
             ->orderBy('start_time', 'desc')
             ->count();
 
-        $color = $incompleteTimesheets > 0 ? 'color: rgb(245 158 11)' : '';
+        $pendingHolidays = Holiday::where('status', 'pending')->count();
+
+        $holidaysColor = $pendingHolidays > 0 ? 'color: rgb(245 158 11)' : '';
+        $timesheetsColor = $incompleteTimesheets > 0 ? 'color: rgb(245 158 11)' : '';
 
         return [
             Stat::make('Employees', $totalEmployees),
             Stat::make('Departments', $totalDepartments),
-            Stat::make('Past Incomplete Timesheets', $incompleteTimesheets)
+                        Stat::make('Past Incomplete Timesheets', $incompleteTimesheets)
                 ->value(new HtmlString(
-                    '<span style="' . $color .'">' . $incompleteTimesheets . '</span>'
+                    '<span style="' . $timesheetsColor .'">' . $incompleteTimesheets . '</span>'
+                )),
+            Stat::make('Pending Holidays', $pendingHolidays)
+                ->value(new HtmlString(
+                    '<span style="' . $holidaysColor .'">' . $pendingHolidays . '</span>'
                 )),
         ];
     }

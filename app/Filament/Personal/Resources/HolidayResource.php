@@ -31,6 +31,22 @@ class HolidayResource extends Resource
         return parent::getEloquentQuery()->where('user_id', Auth::id());
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        $pendingCount = parent::getEloquentQuery()->where('user_id', Auth::id())->where('status', 'pending')->count();
+        return $pendingCount > 0 ? $pendingCount : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return parent::getEloquentQuery()->where('user_id', Auth::id())->where('status', 'pending')->count() > 0 ? 'primary' : 'gray';
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Pending';
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -99,6 +115,7 @@ class HolidayResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
                     ->options([

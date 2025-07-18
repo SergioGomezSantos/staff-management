@@ -21,6 +21,21 @@ class HolidayResource extends Resource
     protected static ?string $navigationGroup = 'Employee Management';
     protected static ?int $navigationSort = 2;
 
+    public static function getNavigationBadge(): ?string
+    {
+        return parent::getEloquentQuery()->where('status', 'pending')->count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return parent::getEloquentQuery()->where('status', 'pending')->count() > 0 ? 'primary' : 'gray';
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Pending';
+    }
+
     public static function form(Form $form): Form
     {
         return $form
