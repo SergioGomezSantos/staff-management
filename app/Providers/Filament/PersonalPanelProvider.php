@@ -3,9 +3,11 @@
 namespace App\Providers\Filament;
 
 use Filament\Http\Middleware\Authenticate;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -27,10 +29,16 @@ class PersonalPanelProvider extends PanelProvider
             ->path('personal')
             ->login()
             ->default()
-            ->profile()
+            ->profile(isSimple: false)
             ->databaseNotifications()
             ->colors([
                 'primary' => Color::Amber,
+            ])
+            ->userMenuItems([
+                MenuItem::make()
+                ->label('Admin Panel')
+                ->url('/admin')
+                ->icon('heroicon-o-shield-check')
             ])
             ->discoverResources(in: app_path('Filament/Personal/Resources'), for: 'App\\Filament\\Personal\\Resources')
             ->discoverPages(in: app_path('Filament/Personal/Pages'), for: 'App\\Filament\\Personal\\Pages')
@@ -52,6 +60,9 @@ class PersonalPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->plugins([
+                FilamentShieldPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,

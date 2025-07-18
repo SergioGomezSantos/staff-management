@@ -95,12 +95,20 @@ class UserResource extends Resource
                     ]),
 
                 Section::make('Departments')
+                    ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('departments')
                             ->relationship('departments', 'name')
                             ->multiple()
                             ->preload()
-                            ->searchable(),
+                            ->searchable()
+                            ->required(),
+                        Forms\Components\Select::make('roles')
+                            ->relationship('roles', 'name')
+                            ->multiple()
+                            ->preload()
+                            ->searchable()
+                            ->required(),
                     ]),
             ]);
     }
