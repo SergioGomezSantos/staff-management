@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TimesheetResource\Pages;
 use App\Filament\Resources\TimesheetResource\RelationManagers;
+use App\Models\Department;
 use App\Models\Timesheet;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -121,6 +122,22 @@ class TimesheetResource extends Resource
                         'work' => 'Working',
                         'pause' => 'In Pause',
                     ]),
+
+                Tables\Filters\SelectFilter::make('department')
+                    ->label('Department')
+                    ->multiple()
+                    ->options(function () {
+                        return Department::all()->pluck('name', 'id');
+                    })
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (empty($data['values'])) {
+                            return $query;
+                        }
+
+                        return $query->whereHas('user.departments', function (Builder $query) use ($data) {
+                            $query->whereIn('departments.id', $data['values']);
+                        });
+                    }),
 
                 Tables\Filters\Filter::make('date_range')
                     ->form([

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\HolidayResource\Pages;
 use App\Filament\Resources\HolidayResource\RelationManagers;
+use App\Models\Department;
 use App\Models\Holiday;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -186,6 +187,21 @@ class HolidayResource extends Resource
                         'approved' => 'Approved',
                         'declined' => 'Declined',
                     ]),
+                Tables\Filters\SelectFilter::make('department')
+                    ->label('Department')
+                    ->multiple()
+                    ->options(function () {
+                        return Department::all()->pluck('name', 'id');
+                    })
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (empty($data['values'])) {
+                            return $query;
+                        }
+
+                        return $query->whereHas('user.departments', function (Builder $query) use ($data) {
+                            $query->whereIn('departments.id', $data['values']);
+                        });
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
