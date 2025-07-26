@@ -1,21 +1,21 @@
 # Staff Management - Sergio
 
-Esta es una web para la gestión de Registro de Horas y Vacaciones para Empleados usando Calendarios y Departamentos.  
-La web está creada utilizando: [filamentPHP](https://filamentphp.com)
+This is a web application for managing Employee Hours and Vacation Records using Calendars and Departments.  
+The web app is built using: [filamentPHP](https://filamentphp.com)
 
-La web tiene 3 tipos de usuarios con distintos roles y 2 paneles en `/admin` y `/personal`:
+The system has 3 types of users with different roles and 2 panels located in `/admin` and `/personal`:
 
 - **Super Admin**:
-    - Permisos completos.
+    - Full permissions.
 
 - **Admin**:
-    - Permisos para el CRUD de todo excepto Roles
-    - Acceso al panel de Admin y a su Personal como usuario.
+    - Permissions for CRUD (Create, Read, Update, Delete) of all resources except Roles.
+    - Access to the Admin panel and their own Personal panel as a user.
 
 - **Personal**:
-    - Acceso y permisos únicamente sobre sus registros.
-    - CRUD de Timesheets y acceso a botones custom para facilitar su uso.
-    - CRUD de Holidays. Solo puede editar si el estado es "pending".
+    - Access and permissions only over their own records.
+    - CRUD on Timesheets and access to custom buttons for ease of use.
+    - CRUD on Holidays. They can only edit if the status is "pending."
 
 ---
 
@@ -27,7 +27,7 @@ La web tiene 3 tipos de usuarios con distintos roles y 2 paneles en `/admin` y `
 ![roles](resources/img/super_admin/Roles.PNG)  
 ![roles](resources/img/super_admin/Roles%20Form.PNG)
 
-Los permisos son creados con el Plugin de Shield (link al final)
+Permissions are managed using the Shield Plugin (link at the end).
 
 </details>
 
@@ -38,8 +38,8 @@ Los permisos son creados con el Plugin de Shield (link al final)
 <details>
 <summary><strong>Dashboard</strong></summary>
 
-El Dashboard tiene distintos Widgets de utilidad para tener una vista rápida de lo importante para un Administrador.  
-Los gráficos tienen filtros funcionales para cambiar las franjas de búsqueda entre semana/mes/año...
+The Dashboard provides various utility widgets for a quick overview of important admin-related tasks.  
+The charts have functional filters to change search ranges between week/month/year...
 ![Dashboard](resources/img/admin/Dashboard.PNG)
 
 </details>
@@ -49,9 +49,8 @@ Los gráficos tienen filtros funcionales para cambiar las franjas de búsqueda e
 
 ![Timesheets](resources/img/admin/Timesheets.PNG)
 
-Ejemplo del filtrado en Timesheets.
+Example of filtering in Timesheets.
 ![Timesheets Filter](resources/img/admin/Timesheets%20Filter.PNG)
-
 
 </details>
 
@@ -65,27 +64,27 @@ Ejemplo del filtrado en Timesheets.
 <details>
 <summary><strong>Employees</strong></summary>
 
-Los admins no pueden ver a Super Admin Users.
+Admins cannot view Super Admin Users.
 ![Employees](resources/img/admin/Employees.PNG)  
 
-Los selectores de State y City filtran automáticamente según el Country y State elegidos.
-![Employees Form](resources/img/admin/Employees%20Form.PNG)  
+The selectors for State and City automatically filter based on the selected Country and State.
+![Employees Form](resources/img/admin/Employees%20Form.PNG)
 
 </details>
 
 <details>
 <summary><strong>Departments</strong></summary>
 
-En la tabla se muestra un count de Users para cada Department.
-![Departments](resources/img/admin/Departments.PNG)  
+The table shows a count of Users for each Department.
+![Departments](resources/img/admin/Departments.PNG)
 
 </details>
 
 <details>
 <summary><strong>Calendars</strong></summary>
 
-Los calendarios tienen el campo active. Por defecto, todas las nuevas entradas de Timesheet/Holiday utilizan el Calendar activo.
-![Calendars](resources/img/admin/Calendars.PNG)  
+Calendars have an "active" field. By default, all new entries for Timesheets/Holidays use the active Calendar.
+![Calendars](resources/img/admin/Calendars.PNG)
 
 </details>
 
@@ -96,27 +95,27 @@ Los calendarios tienen el campo active. Por defecto, todas las nuevas entradas d
 <details>
 <summary><strong>Dashboard</strong></summary>
 
-El Dashboard tiene distintos Widgets de Utilidad para tener una vista rápida de lo importante para un Usuario.
-![Dashboard](resources/img/personal/Dashboard.PNG)  
+The Dashboard provides various utility widgets for a quick overview of the most important user-related tasks.
+![Dashboard](resources/img/personal/Dashboard.PNG)
 
 </details>
 
 <details>
 <summary><strong>Timesheets</strong></summary>
 
-En la parte superior los botones van cambiando para comenzar/parar trabajos/pausas según la última entrada.
-![Timesheets](resources/img/personal/Timesheets.PNG)  
+The top buttons change depending on the last entry, allowing users to start/stop work or take breaks.
+![Timesheets](resources/img/personal/Timesheets.PNG)
 
 </details>
 
 <details>
 <summary><strong>Holidays</strong></summary>
 
-Las Holidays solo son editables/eliminables si aún no han sido revisadas.
-![Holidays](resources/img/personal/Holidays.PNG)  
+Holidays can only be edited/deleted if their status is still "pending."
+![Holidays](resources/img/personal/Holidays.PNG)
 
-Las funcionalidades para el Usuario son Modales en vez de páginas nuevas.
-![Holidays Modal](resources/img/personal/Holidays%20Modal.PNG)  
+User functionalities are presented in modals rather than separate pages.
+![Holidays Modal](resources/img/personal/Holidays%20Modal.PNG)
 
 </details>
 
@@ -127,9 +126,9 @@ Las funcionalidades para el Usuario son Modales en vez de páginas nuevas.
 <details>
 <summary><strong>Notification</strong></summary>
 
-Al crear/editar/eliminar cualquier recurso la página muestra una notifiación temporal para informar.  
-En el caso de las Holidays, crear/editar envía automáticamente correos electrónicos.
-![Notification](resources/img/email/Notification.PNG)  
+Whenever a resource is created/edited/deleted, a temporary notification appears on the page to inform the user.  
+For Holidays, creating/editing automatically sends email notifications.
+![Notification](resources/img/email/Notification.PNG)
 
 </details>
 
@@ -149,7 +148,7 @@ En el caso de las Holidays, crear/editar envía automáticamente correos electr�
 <details>
 <summary><strong>altwaireb/laravel-countries</strong></summary>
 
-Para poblar la base de datos con Country/State/City he utlizado:  
+To populate the database with Country/State/City, I used:  
 [altwaireb/laravel-countries](https://packagist.org/packages/altwaireb/laravel-countries)
 
 </details>
@@ -157,14 +156,14 @@ Para poblar la base de datos con Country/State/City he utlizado:
 <details>
 <summary><strong>Mailer</strong></summary>
 
-Para probar el envío de correos he utilizado [Mailtrap](https://mailtrap.io)
+For email testing, I used [Mailtrap](https://mailtrap.io)
 
 </details>
 
 <details>
 <summary><strong>Plugins</strong></summary>
 
-- Para asignar permisos y roles: [Shield](https://filamentphp.com/plugins/bezhansalleh-shield)  
-- Para exportar a excel: [Excel](https://filamentphp.com/plugins/pxlrbt-excel)
+- For assigning permissions and roles: [Shield](https://filamentphp.com/plugins/bezhansalleh-shield)  
+- For exporting to Excel: [Excel](https://filamentphp.com/plugins/pxlrbt-excel)
 
 </details>
